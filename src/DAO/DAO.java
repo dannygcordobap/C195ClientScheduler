@@ -1,17 +1,17 @@
 package DAO;
 
-import util.DatabaseConnection;
+import util.DatabaseConnectionUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public abstract class DAO {
-    protected DatabaseConnection dbconn;
+    protected DatabaseConnectionUtil dbconn;
     /**
      * User Data Access Object (UserDAO) constructor
      */
     public DAO() {
-        DatabaseConnection dbconn = new DatabaseConnection();
+        DatabaseConnectionUtil dbconn = new DatabaseConnectionUtil();
         try {
             dbconn.connect();
         } catch (Exception e) {

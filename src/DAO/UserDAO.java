@@ -1,7 +1,5 @@
 package DAO;
 
-import util.DatabaseConnection;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

@@ -12,7 +12,7 @@ import scheduler.Customer;
 
 import java.io.IOException;
 
-public class SceneManager {
+public class SceneManagerUtil {
 
     public void warn() {
 

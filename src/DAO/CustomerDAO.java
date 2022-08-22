@@ -3,7 +3,6 @@ package DAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import scheduler.Customer;
-import util.DatabaseConnection;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,34 +48,185 @@ public class CustomerDAO extends DAO {
                 return customers;
             } catch (SQLException e) {
                 error(e);
-                return null;
+                return customers;
             }
+        }
+        return customers;
+    }
+
+    public Customer getCustomer(int customerId) {
+        String query = "SELECT  \n" +
+                "\ta.Customer_ID, a.Customer_Name, a.Address, a.Postal_Code, \n" +
+                "\ta.Phone, a.Create_Date, a.Created_By, a.Last_Update, \n" +
+                "\ta.Last_Updated_By, b.Division, c.Country\n" +
+                "FROM customers a\n" +
+                "LEFT JOIN first_level_divisions b\n" +
+                "ON a.Division_ID = b.Division_ID\n" +
+                "LEFT JOIN countries c\n" +
+                "ON b.Country_ID = c.Country_ID\n" +
+                "WHERE a.Customer_ID = %d;";
+        query = String.format(query, customerId);
+        ResultSet rs = executeQuery(query);
+        try {
+            if (resultSetIsValid(rs) && rs.next()) {
+                return new Customer(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5),
+                        rs.getTimestamp(6).toLocalDateTime(),
+                        rs.getString(7),
+                        rs.getTimestamp(8).toLocalDateTime(),
+                        rs.getString(9),
+                        rs.getString(10),
+                        rs.getString(11)
+                );
+            }
+        } catch (SQLException sqle) {
+            error(sqle);
+            return null;
         }
         return null;
     }
 
-    public boolean updateCustomer(Customer customer, String user) {
-        // Add Division ID to update query
-        String updateQuery = "UPDATE customers\n" +
-            "SET\n" +
-            "\tCustomer_Name = \"%s\",\n" +
-            "\tAddress = \"%s\",\n" +
-            "\tPostal_Code = \"%s\",\n" +
-            "\tPhone = \"%s\",\n" +
-            "\tLast_Updated_By = \"%s\",\n" +
-            "\tLast_Update = \"%s\"\n" +
-            "WHERE Customer_ID = %d;\n";
-        updateQuery= String.format(
-            updateQuery,
-            customer.getName(),
-            customer.getAddress(),
-            customer.getPostalCode(),
-            customer.getPhone(),
-            user,
-            Timestamp.valueOf(LocalDateTime.now()),
-            customer.getCustomerId()
+    public Customer getCustomer(Customer customer) {
+        String query = "SELECT\n" +
+                "\ta.Customer_ID, a.Customer_Name, a.Address, a.Postal_Code,\n" +
+                "\ta.Phone, a.Create_Date, a.Created_By, a.Last_Update,\n" +
+                "\ta.Last_Updated_By, b.Division, c.Country\n" +
+                "FROM customers a\n" +
+                "LEFT JOIN first_level_divisions b\n" +
+                "ON a.Division_ID = b.Division_ID\n" +
+                "LEFT JOIN countries c\n" +
+                "ON b.Country_ID = c.Country_ID\n" +
+                "WHERE\n" +
+                "\ta.Customer_Name = \"%s\" AND a.Address = \"%s\" AND\n" +
+                "\ta.Postal_Code = \"%s\" AND a.Phone = \"%s\" AND\n" +
+                "\ta.Division_ID = %d;";
+        query = String.format(
+                query,
+                customer.getName(),
+                customer.getAddress(),
+                customer.getPostalCode(),
+                customer.getPhone(),
+                getDivisionID(customer.getDivision())
         );
-        System.out.println(updateQuery);
-        return executeUpdate(updateQuery);
+        ResultSet rs = executeQuery(query);
+        try {
+            if (resultSetIsValid(rs) && rs.next()) {
+                return new Customer(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5),
+                        rs.getTimestamp(6).toLocalDateTime(),
+                        rs.getString(7),
+                        rs.getTimestamp(8).toLocalDateTime(),
+                        rs.getString(9),
+                        rs.getString(10),
+                        rs.getString(11)
+                );
+            }
+        } catch (SQLException sqle) {
+            error(sqle);
+            return null;
+        }
+        return null;
+    }
+
+    public int getDivisionID(String division) {
+        int id = -1;
+        String query = "SELECT Division_ID \n" +
+                "FROM first_level_divisions\n" +
+                "WHERE Division = \"%s\";";
+        query = String.format(query, division);
+        ResultSet rs = executeQuery(query);
+        try {
+            if (resultSetIsValid(rs) && rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            error(e);
+            return id;
+        }
+        return id;
+    }
+
+    public boolean updateCustomer(Customer customer, String user) {
+        int divisionId = getDivisionID(customer.getDivision());
+        if (divisionId > 0) {
+            String updateQuery = "UPDATE customers\n" +
+                    "SET\n" +
+                    "\tCustomer_Name = \"%s\",\n" +
+                    "\tAddress = \"%s\",\n" +
+                    "\tPostal_Code = \"%s\",\n" +
+                    "\tPhone = \"%s\",\n" +
+                    "\tLast_Updated_By = \"%s\",\n" +
+                    "\tLast_Update = \"%s\",\n" +
+                    "\tDivision_ID = %d\n" +
+                    "WHERE Customer_ID = %d;\n";
+            updateQuery = String.format(
+                    updateQuery,
+                    customer.getName(),
+                    customer.getAddress(),
+                    customer.getPostalCode(),
+                    customer.getPhone(),
+                    user,
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    divisionId,
+                    customer.getCustomerId()
+            );
+            return executeUpdate(updateQuery);
+        }
+        return false;
+    }
+
+    public boolean insertCustomer(Customer customer, String user) {
+        int divisionId = getDivisionID(customer.getDivision());
+        if (divisionId > 0) {
+            String insertQuery = "INSERT INTO customers (\n" +
+                    "\tCustomer_Name, Address, Postal_Code, Phone,\n" +
+                    "\tCreate_Date, Created_By, Last_Update,\n" +
+                    "\tLast_Updated_By, Division_ID\n" +
+                    ")\n" +
+                    "VALUES (\n" +
+                    "\t\"%s\",\n" +
+                    "\t\"%s\",\n" +
+                    "\t\"%s\",\n" +
+                    "\t\"%s\",\n" +
+                    "\t\"%s\",\n" +
+                    "\t\"%s\",\n" +
+                    "\t\"%s\",\n" +
+                    "\t\"%s\",\n" +
+                    "\t%d" +
+                    ");";
+            insertQuery = String.format(
+                    insertQuery,
+                    customer.getName(),
+                    customer.getAddress(),
+                    customer.getPostalCode(),
+                    customer.getPhone(),
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    user,
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    user,
+                    divisionId
+            );
+            return executeUpdate(insertQuery);
+        }
+        return false;
+    }
+
+    public boolean deleteCustomer(int customerId) {
+        String deleteQuery = String.format(
+                "DELETE FROM customers\n" +
+                        "WHERE Customer_ID = %d;" +
+                        "DELETE FROM appointments\n" +
+                        "WHERE Customer_ID = %d",
+                customerId
+        );
+        return executeUpdate(deleteQuery);
     }
 }

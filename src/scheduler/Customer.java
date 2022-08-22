@@ -1,6 +1,5 @@
 package scheduler;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class Customer {
@@ -49,6 +48,27 @@ public class Customer {
         this.country = country;
     }
 
+    public Customer() { }
+
+    public boolean equals(Customer customer) {
+        if (
+                this.customerId == customer.customerId &&
+                this.name.equals(customer.name) &&
+                this.address.equals(customer.address) &&
+                this.postalCode.equals(customer.postalCode) &&
+                this.phone.equals(customer.phone) &&
+                this.createDate.equals(customer.createDate) &&
+                this.createdBy.equals(customer.createdBy) &&
+                this.lastUpdatedDate.equals(customer.lastUpdatedDate) &&
+                this.lastUpdatedBy.equals(customer.lastUpdatedBy) &&
+                this.division.equals(customer.division) &&
+                this.country.equals(customer.country)
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     public int getCustomerId() {
         return customerId;
     }
@@ -83,7 +103,7 @@ public class Customer {
 
     public String getPhone() { return phone; }
 
-    public void setPhone(String Phone) { this.phone = phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
     public LocalDateTime getCreateDate() {
         return createDate;

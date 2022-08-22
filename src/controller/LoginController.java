@@ -50,25 +50,14 @@ public class LoginController extends Controller {
 
     public void login(ActionEvent event) throws IOException {
         ResourceBundle rb = ResourceBundle.getBundle("language/login", Locale.getDefault());
-
         String username = usernameField.getText();
         String password = passwordField.getText();
-        boolean isValidUserWithCorrectPassword = false;
-        try {
-            isValidUserWithCorrectPassword = USER_DAO.verifyUser(username, password);
-        } catch (Exception e) {
-            System.out.println("LoginController.login: UserDAO.verifyUser did not return a ResultSet object");
-            e.printStackTrace();
-        }
+        boolean isValidUserWithCorrectPassword = USER_DAO.verifyUser(username, password);
         if (isValidUserWithCorrectPassword) {
-            // Alert of appointments within +- 15 min here?
+            // TODO: Alert of appointments within +- 15 min here
             SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.HOME, username);
         } else {
-            // alert
-            Alert incorrectLogin = new Alert(Alert.AlertType.WARNING);
-            incorrectLogin.setTitle(rb.getString("loginFailureTitle"));
-            incorrectLogin.setContentText(rb.getString("loginFailureMessage"));
-            incorrectLogin.showAndWait();
+            ALERTING.alert(rb.getString("loginFailureTitle"), rb.getString("loginFailureMessage"));
         }
     }
 }

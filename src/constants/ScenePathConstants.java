@@ -1,4 +1,4 @@
-package util;
+package constants;
 
 public class ScenePathConstants {
     public final String LOGIN = "../view/Login.fxml";

@@ -2,7 +2,6 @@ package controller;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -49,20 +48,10 @@ public class CustomersController extends Controller {
         phoneTVCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPhone()));
         divisionTVCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDivision()));
         countryTVCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCountry()));
-        try {
-            updateCustomers();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alert noPart = new Alert(Alert.AlertType.WARNING);
-            noPart.setTitle("No Part Selected");
-            noPart.setHeaderText("No part was selected.");
-            noPart.setContentText(String.valueOf(e));
-            noPart.showAndWait();
-        }
+        updateCustomers();
     }
 
-    // Add sort+filter functionality?
-    public void updateCustomers() throws Exception {
+    public void updateCustomers() {
         customerTable.setItems(CUSTOMER_DAO.getCustomers());
     }
 
@@ -71,16 +60,52 @@ public class CustomersController extends Controller {
     }
 
     public void createButtonPressed(ActionEvent event) throws IOException {
-
+        SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.CUSTOMER, USER, new Customer());
     }
 
     public void viewButtonPressed(ActionEvent event) throws IOException {
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
-        SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.CUSTOMER, USER, selectedCustomer);
+        if (selectedCustomer != null) {
+            SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.CUSTOMER, USER, selectedCustomer);
+        } else {
+            ALERTING.alert(
+                    "No Customer Selected",
+                    "No customer has been selected, please select a customer from the table."
+            );
+        }
     }
 
-    public void deleteButtonPressed(ActionEvent event) throws IOException {
-
+    public void deleteButtonPressed(ActionEvent event) {
+        Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
+        if (selectedCustomer != null) {
+            boolean confirmed = ALERTING.confirm(
+                    "Delete Customer",
+                    "You are about to delete a customer!\n" +
+                            "This action is irreversible! Are you sure you would like to continue?",
+                    "Press OK to delete the customer\nPress Cancel to cancel deletion."
+            );
+            if (confirmed) {
+                // TODO: Delete customer appointments -> Delete customer by ID
+                int selectedCustomerId = selectedCustomer.getCustomerId();
+                boolean success = CUSTOMER_DAO.deleteCustomer(selectedCustomerId);
+                if (success) {
+                    ALERTING.inform(
+                            "Successful Delete",
+                            "The selected customer and their appoinments were successfully deleted."
+                    );
+                } else {
+                    ALERTING.alert(
+                            "Customer Delete Error",
+                            "There was an error deleting the customer and their appointments.\n" +
+                                    "Please try again later."
+                    );
+                }
+            }
+        } else {
+            ALERTING.alert(
+                    "No Customer Selected",
+                    "No customer has been selected, please select a customer from the table."
+            );
+        }
     }
-
 }

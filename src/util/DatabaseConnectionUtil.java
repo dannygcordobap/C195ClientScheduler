@@ -2,7 +2,7 @@ package util;
 
 import java.sql.*;
 
-public class DatabaseConnection {
+public class DatabaseConnectionUtil {
 
     public final String dbName = "client_schedule";
     public final String dbUsername = "sqlUser";
@@ -23,7 +23,7 @@ public class DatabaseConnection {
     /**
      * Database connection class constructor
      */
-    public DatabaseConnection() {
+    public DatabaseConnectionUtil() {
         try {
             connect();
         } catch (Exception e) {
