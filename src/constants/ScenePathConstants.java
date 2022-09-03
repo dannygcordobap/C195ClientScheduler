@@ -1,9 +1,10 @@
 package constants;
 
 public class ScenePathConstants {
-    public final String LOGIN = "../view/Login.fxml";
-    public final String HOME = "../view/Home.fxml";
-    public final String CUSTOMERS = "../view/Customers.fxml";
-    public final String SCHEDULE = "../view/Schedule.fxml";
-    public final String CUSTOMER = "../view/Customer.fxml";
+    public static final String LOGIN = "../view/Login.fxml";
+    public static final String HOME = "../view/Home.fxml";
+    public static final String CUSTOMERS = "../view/Customers.fxml";
+    public static final String SCHEDULE = "../view/Schedule.fxml";
+    public static final String CUSTOMER = "../view/Customer.fxml";
+    public static final String APPOINTMENT = "../view/Appointment.fxml";
 }

@@ -1,5 +1,6 @@
 package controller;
 
+import constants.ScenePathConstants;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -56,17 +57,17 @@ public class CustomersController extends Controller {
     }
 
     public void backButtonPressed(ActionEvent event) throws IOException {
-        SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.HOME, USER);
+        SCENE_MANAGER.changeScene(event, ScenePathConstants.HOME, USER);
     }
 
     public void createButtonPressed(ActionEvent event) throws IOException {
-        SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.CUSTOMER, USER, new Customer());
+        SCENE_MANAGER.changeScene(event, ScenePathConstants.CUSTOMER, USER, new Customer());
     }
 
     public void viewButtonPressed(ActionEvent event) throws IOException {
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
         if (selectedCustomer != null) {
-            SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.CUSTOMER, USER, selectedCustomer);
+            SCENE_MANAGER.changeScene(event, ScenePathConstants.CUSTOMER, USER, selectedCustomer);
         } else {
             ALERTING.alert(
                     "No Customer Selected",
@@ -87,8 +88,12 @@ public class CustomersController extends Controller {
             if (confirmed) {
                 // TODO: Delete customer appointments -> Delete customer by ID
                 int selectedCustomerId = selectedCustomer.getCustomerId();
-                boolean success = CUSTOMER_DAO.deleteCustomer(selectedCustomerId);
+                boolean success = (
+                        CUSTOMER_DAO.deleteCustomer(selectedCustomerId) &&
+                                APPOINTMENT_DAO.deleteCustomerAppointments(selectedCustomerId)
+                );
                 if (success) {
+                    updateCustomers();
                     ALERTING.inform(
                             "Successful Delete",
                             "The selected customer and their appoinments were successfully deleted."

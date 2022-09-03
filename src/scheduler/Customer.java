@@ -1,6 +1,6 @@
 package scheduler;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 public class Customer {
 
@@ -10,15 +10,16 @@ public class Customer {
     private String address;
     private String postalCode;
     private String phone;
-    private LocalDateTime createDate;
+    private Timestamp createDate;
     private String createdBy;
     private String lastUpdatedBy;
-    private LocalDateTime lastUpdatedDate;
+    private Timestamp lastUpdatedDate;
     private String division;
     private String country;
 
     /**
      * Customer constructor
+     *
      * @param customerId
      * @param name
      * @param address
@@ -32,8 +33,8 @@ public class Customer {
      * @param country
      */
     public Customer(
-            int customerId, String name, String address, String postalCode, String phone, LocalDateTime createDate,
-            String createdBy, LocalDateTime lastUpdatedDate, String lastUpdatedBy, String division, String country
+            int customerId, String name, String address, String postalCode, String phone, Timestamp createDate,
+            String createdBy, Timestamp lastUpdatedDate, String lastUpdatedBy, String division, String country
     ) {
         this.customerId = customerId;
         this.name = name;
@@ -48,11 +49,11 @@ public class Customer {
         this.country = country;
     }
 
-    public Customer() { }
+    public Customer() {
+    }
 
     public boolean equals(Customer customer) {
-        if (
-                this.customerId == customer.customerId &&
+        return this.customerId == customer.customerId &&
                 this.name.equals(customer.name) &&
                 this.address.equals(customer.address) &&
                 this.postalCode.equals(customer.postalCode) &&
@@ -62,11 +63,11 @@ public class Customer {
                 this.lastUpdatedDate.equals(customer.lastUpdatedDate) &&
                 this.lastUpdatedBy.equals(customer.lastUpdatedBy) &&
                 this.division.equals(customer.division) &&
-                this.country.equals(customer.country)
-        ) {
-            return true;
-        }
-        return false;
+                this.country.equals(customer.country);
+    }
+
+    public String toString() {
+        return String.format("%s, ID: %d", name, customerId);
     }
 
     public int getCustomerId() {
@@ -101,15 +102,19 @@ public class Customer {
         this.postalCode = postalCode;
     }
 
-    public String getPhone() { return phone; }
+    public String getPhone() {
+        return phone;
+    }
 
-    public void setPhone(String phone) { this.phone = phone; }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-    public LocalDateTime getCreateDate() {
+    public Timestamp getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
+    public void setCreateDate(Timestamp createDate) {
         this.createDate = createDate;
     }
 
@@ -129,15 +134,21 @@ public class Customer {
         this.lastUpdatedBy = lastUpdatedBy;
     }
 
-    public LocalDateTime getLastUpdatedDate() { return lastUpdatedDate; }
+    public Timestamp getLastUpdatedDate() {
+        return lastUpdatedDate;
+    }
 
-    public void setLastUpdatedDate(LocalDateTime date) { this.lastUpdatedDate = lastUpdatedDate; }
+    public void setLastUpdatedDate(Timestamp lastUpdatedDate) {
+        this.lastUpdatedDate = lastUpdatedDate;
+    }
 
     public String getDivision() {
         return division;
     }
 
-    public void setDivision(String division) { this.division = division; }
+    public void setDivision(String division) {
+        this.division = division;
+    }
 
     public void setCountry(String country) {
         this.country = country;

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="900.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ScheduleController">
+    <children>
+        <Pane prefHeight="900.0" prefWidth="1200.0">
+            <children>
+                <TableView fx:id="appointmentTable" layoutX="52.0" layoutY="81.0" prefHeight="774.0" prefWidth="1096.0">
+                    <columns>
+                        <TableColumn fx:id="titleTVCol" prefWidth="137.0" text="Title" />
+                        <TableColumn fx:id="customerTVCol" prefWidth="137.0" text="Customer" />
+                        <TableColumn fx:id="descriptionTVCol" prefWidth="137.0" text="Description" />
+                        <TableColumn fx:id="locationTVCol" prefWidth="137.0" text="Location" />
+                        <TableColumn fx:id="typeTVCol" prefWidth="137.0" text="Type" />
+                        <TableColumn fx:id="startTVCol" prefWidth="137.0" text="Start" />
+                        <TableColumn fx:id="endTVCol" prefWidth="137.0" text="End" />
+                  <TableColumn fx:id="contactNameTVCol" prefWidth="137.0" text="Contact Name" />
+                    </columns>
+                </TableView>
+                <Button fx:id="viewButton" layoutX="1089.0" layoutY="865.0" mnemonicParsing="false" onAction="#viewButtonPressed" text="View" />
+                <Button fx:id="deleteButton" layoutX="1140.0" layoutY="865.0" mnemonicParsing="false" onAction="#deleteButtonPressed" text="Delete" />
+                <Button fx:id="backButton" layoutX="9.0" layoutY="865.0" mnemonicParsing="false" onAction="#backButtonPressed" text="Back" />
+                <Label layoutX="509.0" text="Appointments">
+                    <padding>
+                        <Insets bottom="13.0" top="13.0" />
+                    </padding>
+                    <font>
+                        <Font size="29.0" />
+                    </font>
+                </Label>
+                <Button fx:id="createButton" layoutX="1029.0" layoutY="865.0" mnemonicParsing="false" onAction="#createButtonPressed" text="Create" />
+            </children>
+        </Pane>
+    </children>
+</AnchorPane>

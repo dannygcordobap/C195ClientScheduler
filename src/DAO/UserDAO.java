@@ -1,5 +1,7 @@
 package DAO;
 
+import scheduler.User;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -14,27 +16,59 @@ public class UserDAO extends DAO {
 
     /**
      * Method to verify that a user is in the database, and if so, that the password matches
+     *
      * @param username the username of the user to verify
      * @param password the password of the user to verify
      * @return true if the user exists with an equivalent password
-     * @throws Exception if a ResultSet is not returned indicating a database connection error
      */
     public boolean verifyUser(String username, String password) {
-
         // Add logging for successful and unsuccessful login attempts
         String query = String.format("SELECT Password FROM USERS WHERE User_Name = \"%s\";", username);
-        ResultSet rs = executeQuery(query);
+        ResultSet rs = executeQuery(getPreparedStatement(query));
         if (resultSetIsValid(rs)) {
             try {
                 String storedPassword = rs.next() ? rs.getString(1) : null;
-                if (storedPassword == null || !storedPassword.equals(password)) {
-                    return false;
-                }
-                return true;
+                return storedPassword != null && storedPassword.equals(password);
             } catch (SQLException e) {
                 error(e);
             }
         }
         return false;
+    }
+
+    public User getUser(int id) {
+        String query = String.format(
+                "SELECT User_Name\n" +
+                        "FROM users\n" +
+                        "WHERE User_ID = %d;",
+                id
+        );
+        ResultSet rs = executeQuery(getPreparedStatement(query));
+        try {
+            if (resultSetIsValid(rs) && rs.next()) {
+                return new User(rs.getString(1), id);
+            }
+        } catch (SQLException sqle) {
+            error(sqle);
+        }
+        return null;
+    }
+
+    public User getUser(String username) {
+        String query = String.format(
+                "SELECT User_ID\n" +
+                        "FROM users\n" +
+                        "WHERE User_Name = \"%s\";",
+                username
+        );
+        ResultSet rs = executeQuery(getPreparedStatement(query));
+        try {
+            if (resultSetIsValid(rs) && rs.next()) {
+                return new User(username, rs.getInt(1));
+            }
+        } catch (SQLException sqle) {
+            error(sqle);
+        }
+        return null;
     }
 }

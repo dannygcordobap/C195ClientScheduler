@@ -9,37 +9,43 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
-   <children>
-      <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
-         <children>
-            <PasswordField fx:id="passwordField" layoutX="226.0" layoutY="231.0" />
-            <Button fx:id="loginButton" layoutX="299.0" layoutY="266.0" mnemonicParsing="false" onAction="#login" prefHeight="25.0" prefWidth="75.0" text="Login" />
-            <TextField fx:id="usernameField" layoutX="226.0" layoutY="176.0" prefHeight="25.0" prefWidth="149.0" />
-            <Label fx:id="usernameLabel" layoutX="226.0" layoutY="146.0" prefHeight="25.0" prefWidth="260.0" text="Username">
-               <padding>
-                  <Insets bottom="2.5" top="10.0" />
-               </padding>
-            </Label>
-            <Label fx:id="passwordLabel" layoutX="226.0" layoutY="201.0" prefHeight="30.0" prefWidth="260.0" text="Password">
-               <padding>
-                  <Insets bottom="2.5" top="10.0" />
-               </padding>
-            </Label>
-            <Label fx:id="titleLabel" alignment="CENTER" layoutX="98.0" layoutY="109.0" prefHeight="37.0" prefWidth="404.0" text="Login to the Client Scheduler">
-               <padding>
-                  <Insets bottom="5.0" top="5.0" />
-               </padding>
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-            <Label fx:id="zoneLabel" layoutY="363.0">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </Label>
-         </children>
-      </Pane>
-   </children>
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.LoginController">
+    <children>
+        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+              prefWidth="600.0">
+            <children>
+                <PasswordField fx:id="passwordField" layoutX="226.0" layoutY="231.0"/>
+                <Button fx:id="loginButton" layoutX="299.0" layoutY="266.0" mnemonicParsing="false" onAction="#login"
+                        prefHeight="25.0" prefWidth="75.0" text="Login"/>
+                <TextField fx:id="usernameField" layoutX="226.0" layoutY="176.0" prefHeight="25.0" prefWidth="149.0"/>
+                <Label fx:id="usernameLabel" layoutX="226.0" layoutY="146.0" prefHeight="25.0" prefWidth="260.0"
+                       text="Username">
+                    <padding>
+                        <Insets bottom="2.5" top="10.0"/>
+                    </padding>
+                </Label>
+                <Label fx:id="passwordLabel" layoutX="226.0" layoutY="201.0" prefHeight="30.0" prefWidth="260.0"
+                       text="Password">
+                    <padding>
+                        <Insets bottom="2.5" top="10.0"/>
+                    </padding>
+                </Label>
+                <Label fx:id="titleLabel" alignment="CENTER" layoutX="98.0" layoutY="109.0" prefHeight="37.0"
+                       prefWidth="404.0" text="Login to the Client Scheduler">
+                    <padding>
+                        <Insets bottom="5.0" top="5.0"/>
+                    </padding>
+                    <font>
+                        <Font size="18.0"/>
+                    </font>
+                </Label>
+                <Label fx:id="zoneLabel" layoutY="363.0">
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                    </padding>
+                </Label>
+            </children>
+        </Pane>
+    </children>
 </AnchorPane>

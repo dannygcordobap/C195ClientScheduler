@@ -16,7 +16,7 @@ public class CountryDAO extends DAO {
     public ObservableList<String> getAllCountries() throws Exception {
         String query = "SELECT Country\n" +
                 "FROM countries;";
-        ResultSet rs = super.executeQuery(query);
+        ResultSet rs = executeQuery(getPreparedStatement(query));
         if (resultSetIsValid(rs)) {
             try {
                 ObservableList<String> countries = FXCollections.observableArrayList();
@@ -38,7 +38,7 @@ public class CountryDAO extends DAO {
                 "LEFT JOIN first_level_divisions b\n" +
                 "ON a.Country_ID = b.Country_ID\n" +
                 String.format("WHERE a.Country = \"%s\";", country);
-        ResultSet rs = executeQuery(query);
+        ResultSet rs = executeQuery(getPreparedStatement(query));
         if (resultSetIsValid(rs)) {
             try {
                 ObservableList<String> divisions = FXCollections.observableArrayList();

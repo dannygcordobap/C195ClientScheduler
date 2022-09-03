@@ -2,11 +2,14 @@ package DAO;
 
 import util.DatabaseConnectionUtil;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public abstract class DAO {
+
     protected DatabaseConnectionUtil dbconn;
+
     /**
      * User Data Access Object (UserDAO) constructor
      */
@@ -21,7 +24,7 @@ public abstract class DAO {
         this.dbconn = dbconn;
     }
 
-    protected ResultSet executeQuery(String query) {
+    protected ResultSet executeQuery(PreparedStatement query) {
         ResultSet rs = null;
         try {
             rs = dbconn.executeQuery(query);
@@ -35,13 +38,10 @@ public abstract class DAO {
         return rs;
     }
 
-    protected boolean executeUpdate(String updateQuery) {
+    protected boolean executeUpdate(PreparedStatement updateQuery) {
         try {
             int updatedRows = dbconn.executeUpdate(updateQuery);
-            if (updatedRows > 0) {
-                return true;
-            }
-            return false;
+            return updatedRows > 0;
         } catch (Exception e) {
             error(e);
             return false;
@@ -49,15 +49,20 @@ public abstract class DAO {
     }
 
     protected boolean resultSetIsValid(ResultSet rs) {
-        if (rs == null) {
-            return false;
-        }
-        return true;
+        return rs != null;
     }
 
     protected void error(Exception error) {
         System.out.println(getErrorMessage(error.getMessage()));
         error.printStackTrace();
+    }
+
+    protected PreparedStatement getPreparedStatement(String query) {
+        try {
+            return dbconn.getDBConn().prepareStatement(query);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private String getErrorMessage(String errorMessage) {

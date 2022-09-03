@@ -12,7 +12,7 @@ public class DatabaseConnectionUtil {
     private Connection conn;
 
     // Database connection getter
-    public Connection getDBConn() throws Exception{
+    public Connection getDBConn() throws Exception {
         Connection conn = this.conn;
         if (conn == null) {
             throw new Exception("No database connected");
@@ -33,6 +33,7 @@ public class DatabaseConnectionUtil {
 
     /**
      * Method to connect to database with the credentials provided during initialization
+     *
      * @return DatabaseConnection object
      * @throws Exception upon invalid connection
      */
@@ -41,7 +42,7 @@ public class DatabaseConnectionUtil {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver"); // Sets and loads the appropriate JDBC driver
             this.conn = DriverManager.getConnection(
-                this.databaseURL, this.dbUsername, this.dbPassword
+                    this.databaseURL, this.dbUsername, this.dbPassword
             );
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -50,29 +51,27 @@ public class DatabaseConnectionUtil {
 
     /**
      * Method to execute select-from-where SQL queries
+     *
      * @param query the SQL query to execute as a string
      * @return ResultSet containing the results of the query
      * @throws SQLException if the sql statement passed in is invalid
-     * @throws Exception if the database connection variable is null
+     * @throws Exception    if the database connection variable is null
      */
-    public ResultSet executeQuery(String query) throws SQLException, Exception {
-        Connection conn = this.getDBConn();
-        PreparedStatement ps = conn.prepareStatement(query);
-        ResultSet rs = ps.executeQuery(query);
+    public ResultSet executeQuery(PreparedStatement ps) throws SQLException, Exception {
+        ResultSet rs = ps.executeQuery();
         return rs;
     }
 
     /**
      * Method to excute queries other than select-from-where queries
+     *
      * @param query the SQL query to execute
      * @return int representing the number of affected rows
      * @throws SQLException if the SQL statement passed in is invalid
-     * @throws Exception if the database connection variable is null
+     * @throws Exception    if the database connection variable is null
      */
-    public int executeUpdate(String query) throws SQLException, Exception {
-        Connection dbconn = this.getDBConn();
-        PreparedStatement ps = dbconn.prepareStatement(query);
-        int updatedRows = ps.executeUpdate(query);
+    public int executeUpdate(PreparedStatement ps) throws SQLException, Exception {
+        int updatedRows = ps.executeUpdate();
         return updatedRows;
     }
 }

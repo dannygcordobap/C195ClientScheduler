@@ -1,5 +1,6 @@
 package controller;
 
+import constants.ScenePathConstants;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -83,18 +84,22 @@ public class CustomerController extends Controller {
 
     public void backButtonPressed(ActionEvent event) throws IOException {
         boolean inEditMode = editButton.isDisable();
-        if (inEditMode){
-            boolean confirmed = ALERTING.confirm(
-                    "Unsaved Changes",
-                    "Unsaved changes have been detected in the workspace.\nWould you like to discard these changes?",
-                    "Press OK to discard the changes\nPress cancel to return to edit mode"
-            );
-            if (confirmed) {
-                SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.CUSTOMERS, USER);
+        if (inEditMode) {
+            updateCustomer();
+            if (customerWasEdited() || isNewCustomer) {
+                boolean confirmed = ALERTING.confirm(
+                        "Unsaved Changes",
+                        "Unsaved changes have been detected in the workspace.\nWould you like to discard these changes?",
+                        "Press OK to discard the changes\nPress cancel to return to edit mode"
+                );
+                if (confirmed) {
+                    SCENE_MANAGER.changeScene(event, ScenePathConstants.CUSTOMERS, USER);
+                } else {
+                    return;
+                }
             }
-        } else {
-            SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.CUSTOMERS, USER);
         }
+        SCENE_MANAGER.changeScene(event, ScenePathConstants.CUSTOMERS, USER);
     }
 
     public void editButtonPressed(ActionEvent event) {
@@ -109,6 +114,7 @@ public class CustomerController extends Controller {
 
     public void saveButtonPressed() {
         List<String> invalidFields = getInvalidInputs();
+        updateCustomer();
         if (invalidFields.size() > 0) {
             ALERTING.alert(
                     "Invalid Fields",
@@ -127,7 +133,7 @@ public class CustomerController extends Controller {
             if (confirmed && isNewCustomer) {
                 saveCustomer(true);
             } else if (confirmed) {
-                if (customerWasEdited(customer)) {
+                if (customerWasEdited()) {
                     saveCustomer(false);
                 } else {
                     ALERTING.alert(
@@ -145,7 +151,6 @@ public class CustomerController extends Controller {
         String errorTitle;
         String errorMessage;
         boolean success;
-        updateCustomerAttributes();
         if (isNewCustomer) {
             success = CUSTOMER_DAO.insertCustomer(customer, USER);
             successMessage = "The new customer was successfully added to the system.";
@@ -159,26 +164,20 @@ public class CustomerController extends Controller {
         }
         if (success) {
             changeButtonMode();
-            customer = CUSTOMER_DAO.getCustomer(customer);
+            customer = CUSTOMER_DAO.getCustomer(customer.getCustomerId());
             setData(customer);
             ALERTING.inform(successTitle, successMessage);
-        }
-        else {
+        } else {
             ALERTING.error(errorTitle, errorMessage);
         }
     }
 
-    private boolean customerWasEdited(Customer customer) {
+    private boolean customerWasEdited() {
         Customer customerInDatabase = CUSTOMER_DAO.getCustomer(customer.getCustomerId());
         if (customerInDatabase != null) {
-            if (customer.equals(customerInDatabase)) {
-                return false;
-            }
-            return true;
+            return !customer.equals(customerInDatabase);
         }
-        else {
-            return true;
-        }
+        return true;
     }
 
     private void setTextFields() {
@@ -192,13 +191,14 @@ public class CustomerController extends Controller {
         } else {
             titleLabel.setText(customer.getName());
             nameField.setText(customer.getName());
-            idLabel.setText(String.valueOf(customer.getCustomerId()));
             phoneField.setText(customer.getPhone());
             addressField.setText(customer.getAddress());
             postalCodeField.setText(customer.getPostalCode());
-            dateCreatedLabel.setText(customer.getCreateDate().toString());
+
+            idLabel.setText(String.valueOf(customer.getCustomerId()));
+            dateCreatedLabel.setText(formatDatetime(customer.getCreateDate()));
             createdByLabel.setText(customer.getCreatedBy());
-            dateUpdatedLabel.setText(customer.getLastUpdatedDate().toString());
+            dateUpdatedLabel.setText(formatDatetime(customer.getLastUpdatedDate()));
             updatedByLabel.setText(customer.getLastUpdatedBy());
         }
     }
@@ -223,7 +223,7 @@ public class CustomerController extends Controller {
         }
     }
 
-    private void updateCustomerAttributes() {
+    private void updateCustomer() {
         customer.setName(nameField.getText());
         customer.setPhone(phoneField.getText());
         customer.setAddress(addressField.getText());
