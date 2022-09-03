@@ -9,31 +9,36 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomersController">
-   <children>
-      <Pane prefHeight="400.0" prefWidth="600.0">
-         <children>
-            <TableView fx:id="customerTable" layoutX="25.0" layoutY="69.0" prefHeight="285.0" prefWidth="550.0">
-              <columns>
-                <TableColumn fx:id="nameTVCol" prefWidth="137.5" text="Name" />
-                <TableColumn fx:id="phoneTVCol" prefWidth="137.5" text="Phone" />
-                  <TableColumn fx:id="divisionTVCol" prefWidth="137.5" text="Division" />
-                  <TableColumn fx:id="countryTVCol" prefWidth="137.5" text="Country" />
-              </columns>
-            </TableView>
-            <Button fx:id="viewButton" layoutX="473.0" layoutY="365.0" mnemonicParsing="false" onAction="#viewButtonPressed" text="View" />
-            <Button fx:id="deleteButton" layoutX="524.0" layoutY="365.0" mnemonicParsing="false" onAction="#deleteButtonPressed" text="Delete" />
-            <Button fx:id="backButton" layoutX="25.0" layoutY="365.0" mnemonicParsing="false" onAction="#backButtonPressed" text="Back" />
-            <Label layoutX="232.0" text="Customers">
-               <padding>
-                  <Insets bottom="13.0" top="13.0" />
-               </padding>
-               <font>
-                  <Font size="29.0" />
-               </font>
-            </Label>
-            <Button fx:id="createButton" layoutX="413.0" layoutY="365.0" mnemonicParsing="false" onAction="#createButtonPressed" text="Create" />
-         </children>
-      </Pane>
-   </children>
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.CustomersController">
+    <children>
+        <Pane prefHeight="400.0" prefWidth="600.0">
+            <children>
+                <TableView fx:id="customerTable" layoutX="25.0" layoutY="69.0" prefHeight="285.0" prefWidth="550.0">
+                    <columns>
+                        <TableColumn fx:id="nameTVCol" prefWidth="137.5" text="Name"/>
+                        <TableColumn fx:id="phoneTVCol" prefWidth="137.5" text="Phone"/>
+                        <TableColumn fx:id="divisionTVCol" prefWidth="137.5" text="Division"/>
+                        <TableColumn fx:id="countryTVCol" prefWidth="137.5" text="Country"/>
+                    </columns>
+                </TableView>
+                <Button fx:id="viewButton" layoutX="473.0" layoutY="365.0" mnemonicParsing="false"
+                        onAction="#viewButtonPressed" text="View"/>
+                <Button fx:id="deleteButton" layoutX="524.0" layoutY="365.0" mnemonicParsing="false"
+                        onAction="#deleteButtonPressed" text="Delete"/>
+                <Button fx:id="backButton" layoutX="25.0" layoutY="365.0" mnemonicParsing="false"
+                        onAction="#backButtonPressed" text="Back"/>
+                <Label layoutX="232.0" text="Customers">
+                    <padding>
+                        <Insets bottom="13.0" top="13.0"/>
+                    </padding>
+                    <font>
+                        <Font size="29.0"/>
+                    </font>
+                </Label>
+                <Button fx:id="createButton" layoutX="413.0" layoutY="365.0" mnemonicParsing="false"
+                        onAction="#createButtonPressed" text="Create"/>
+            </children>
+        </Pane>
+    </children>
 </AnchorPane>

@@ -1,5 +1,6 @@
 package controller;
 
+import constants.ScenePathConstants;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -69,6 +70,11 @@ public class CustomerController extends Controller {
 
     }
 
+    /**
+     * Sets the customer data in the view
+     *
+     * @param customer - Customer to view
+     */
     public void setData(Customer customer) {
         if (customer.getName() == null) {
             isNewCustomer = true;
@@ -81,34 +87,57 @@ public class CustomerController extends Controller {
         setTextFields();
     }
 
+    /**
+     * Back button handler - takes the user back to the customers table view, if changes were made but not saved
+     * the user is alerted and asked for confirmation
+     *
+     * @param event - Event that triggered the button press
+     * @throws IOException - Exception thrown when there is an IO error
+     */
     public void backButtonPressed(ActionEvent event) throws IOException {
         boolean inEditMode = editButton.isDisable();
-        if (inEditMode){
-            boolean confirmed = ALERTING.confirm(
-                    "Unsaved Changes",
-                    "Unsaved changes have been detected in the workspace.\nWould you like to discard these changes?",
-                    "Press OK to discard the changes\nPress cancel to return to edit mode"
-            );
-            if (confirmed) {
-                SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.CUSTOMERS, USER);
+        if (inEditMode) {
+            updateCustomer();
+            if (customerWasEdited() || isNewCustomer) {
+                boolean confirmed = ALERTING.confirm(
+                        "Unsaved Changes",
+                        "Unsaved changes have been detected in the workspace.\nWould you like to discard these changes?",
+                        "Press OK to discard the changes\nPress cancel to return to edit mode"
+                );
+                if (confirmed) {
+                    SCENE_MANAGER.changeScene(event, ScenePathConstants.CUSTOMERS, USER);
+                } else {
+                    return;
+                }
             }
-        } else {
-            SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.CUSTOMERS, USER);
         }
+        SCENE_MANAGER.changeScene(event, ScenePathConstants.CUSTOMERS, USER);
     }
 
+    /**
+     * Edit button handler - enables the reusing of the page for creation, viewing, editing but changing
+     * the disable state of certain buttons.
+     */
     public void editButtonPressed(ActionEvent event) {
         changeButtonMode();
     }
 
-    public void countryComboBoxSelectionChange(ActionEvent event) {
+    /**
+     * Country combo box handler - on change it sets the division combo box appropriately
+     */
+    public void countryComboBoxSelectionChange() {
         String newCountry = countryComboBox.getSelectionModel().getSelectedItem();
         divisionComboBox.setItems(COUNTRY_DAO.getCountryDivisions(newCountry));
         divisionComboBox.getSelectionModel().select(0);
     }
 
+    /**
+     * Save button handler - validates input and displays a variety of alerts and popups to inform the user
+     * of the status of the process, whether or not the process has succeeded, and and invalid inputs.
+     */
     public void saveButtonPressed() {
         List<String> invalidFields = getInvalidInputs();
+        updateCustomer();
         if (invalidFields.size() > 0) {
             ALERTING.alert(
                     "Invalid Fields",
@@ -127,7 +156,7 @@ public class CustomerController extends Controller {
             if (confirmed && isNewCustomer) {
                 saveCustomer(true);
             } else if (confirmed) {
-                if (customerWasEdited(customer)) {
+                if (customerWasEdited()) {
                     saveCustomer(false);
                 } else {
                     ALERTING.alert(
@@ -139,13 +168,15 @@ public class CustomerController extends Controller {
         }
     }
 
+    /**
+     * Helper function that saves the customer in the database and handles user alerting
+     */
     private void saveCustomer(boolean isNewCustomer) {
         String successTitle = "Success";
         String successMessage;
         String errorTitle;
         String errorMessage;
         boolean success;
-        updateCustomerAttributes();
         if (isNewCustomer) {
             success = CUSTOMER_DAO.insertCustomer(customer, USER);
             successMessage = "The new customer was successfully added to the system.";
@@ -159,28 +190,34 @@ public class CustomerController extends Controller {
         }
         if (success) {
             changeButtonMode();
-            customer = CUSTOMER_DAO.getCustomer(customer);
+            if (isNewCustomer) {
+                customer = CUSTOMER_DAO.getCustomer(customer);
+            } else {
+                customer = CUSTOMER_DAO.getCustomer(customer.getCustomerId());
+            }
             setData(customer);
             ALERTING.inform(successTitle, successMessage);
-        }
-        else {
+        } else {
             ALERTING.error(errorTitle, errorMessage);
         }
     }
 
-    private boolean customerWasEdited(Customer customer) {
+    /**
+     * Helper function to verify whether or not a customer was edited
+     *
+     * @return - boolean
+     */
+    private boolean customerWasEdited() {
         Customer customerInDatabase = CUSTOMER_DAO.getCustomer(customer.getCustomerId());
         if (customerInDatabase != null) {
-            if (customer.equals(customerInDatabase)) {
-                return false;
-            }
-            return true;
+            return !customer.equals(customerInDatabase);
         }
-        else {
-            return true;
-        }
+        return true;
     }
 
+    /**
+     * Helper function to set the text fields based on customer data
+     */
     private void setTextFields() {
         if (isNewCustomer) {
             titleLabel.setText("Adding Customer");
@@ -192,17 +229,22 @@ public class CustomerController extends Controller {
         } else {
             titleLabel.setText(customer.getName());
             nameField.setText(customer.getName());
-            idLabel.setText(String.valueOf(customer.getCustomerId()));
             phoneField.setText(customer.getPhone());
             addressField.setText(customer.getAddress());
             postalCodeField.setText(customer.getPostalCode());
-            dateCreatedLabel.setText(customer.getCreateDate().toString());
+
+            idLabel.setText(String.valueOf(customer.getCustomerId()));
+            dateCreatedLabel.setText(formatDatetime(customer.getCreateDate()));
             createdByLabel.setText(customer.getCreatedBy());
-            dateUpdatedLabel.setText(customer.getLastUpdatedDate().toString());
+            dateUpdatedLabel.setText(formatDatetime(customer.getLastUpdatedDate()));
             updatedByLabel.setText(customer.getLastUpdatedBy());
         }
     }
 
+    /**
+     * Sets the country and division combo boxes based on customer information. If the customer is new then the
+     * first country and its first division are selected in the combo boxes
+     */
     private void setComboBoxes() {
         try {
             countryComboBox.setItems(COUNTRY_DAO.getAllCountries());
@@ -223,7 +265,10 @@ public class CustomerController extends Controller {
         }
     }
 
-    private void updateCustomerAttributes() {
+    /**
+     * Helper function to update the appointment object based on input
+     */
+    private void updateCustomer() {
         customer.setName(nameField.getText());
         customer.setPhone(phoneField.getText());
         customer.setAddress(addressField.getText());
@@ -232,6 +277,9 @@ public class CustomerController extends Controller {
         customer.setDivision(divisionComboBox.getSelectionModel().getSelectedItem());
     }
 
+    /**
+     * Helper function to change between edit and view modes
+     */
     private void changeButtonMode() {
         boolean status = nameField.isDisable();
         nameField.setDisable(!status);
@@ -244,6 +292,11 @@ public class CustomerController extends Controller {
         editButton.setDisable(status);
     }
 
+    /**
+     * Helper function that validates inputs
+     *
+     * @return - List of invalid fields as strings
+     */
     private List<String> getInvalidInputs() {
         List<String> invalidInputs = new ArrayList<>();
         if (nameField.getText() == null || nameField.getText().trim().isEmpty()) {

@@ -3,11 +3,12 @@ package DAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import scheduler.Customer;
+import scheduler.User;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 public class CustomerDAO extends DAO {
 
@@ -27,7 +28,7 @@ public class CustomerDAO extends DAO {
                 "LEFT JOIN countries c\n" +
                 "ON b.Country_ID = c.Country_ID\n" +
                 "ORDER BY 2 ASC;";
-        ResultSet rs = executeQuery(query);
+        ResultSet rs = executeQuery(getPreparedStatement(query));
         if (resultSetIsValid(rs)) {
             try {
                 while (rs.next()) {
@@ -37,9 +38,9 @@ public class CustomerDAO extends DAO {
                             rs.getString(3),
                             rs.getString(4),
                             rs.getString(5),
-                            rs.getTimestamp(6).toLocalDateTime(),
+                            rs.getTimestamp(6),
                             rs.getString(7),
-                            rs.getTimestamp(8).toLocalDateTime(),
+                            rs.getTimestamp(8),
                             rs.getString(9),
                             rs.getString(10),
                             rs.getString(11)
@@ -65,8 +66,7 @@ public class CustomerDAO extends DAO {
                 "LEFT JOIN countries c\n" +
                 "ON b.Country_ID = c.Country_ID\n" +
                 "WHERE a.Customer_ID = %d;";
-        query = String.format(query, customerId);
-        ResultSet rs = executeQuery(query);
+        ResultSet rs = executeQuery(getPreparedStatement(String.format(query, customerId)));
         try {
             if (resultSetIsValid(rs) && rs.next()) {
                 return new Customer(
@@ -75,9 +75,9 @@ public class CustomerDAO extends DAO {
                         rs.getString(3),
                         rs.getString(4),
                         rs.getString(5),
-                        rs.getTimestamp(6).toLocalDateTime(),
+                        rs.getTimestamp(6),
                         rs.getString(7),
-                        rs.getTimestamp(8).toLocalDateTime(),
+                        rs.getTimestamp(8),
                         rs.getString(9),
                         rs.getString(10),
                         rs.getString(11)
@@ -90,6 +90,11 @@ public class CustomerDAO extends DAO {
         return null;
     }
 
+    /**
+     * Retrieves a customer using a customer object
+     * @param customer - Customer object to retrieve from database
+     * @return - customer
+     */
     public Customer getCustomer(Customer customer) {
         String query = "SELECT\n" +
                 "\ta.Customer_ID, a.Customer_Name, a.Address, a.Postal_Code,\n" +
@@ -112,7 +117,7 @@ public class CustomerDAO extends DAO {
                 customer.getPhone(),
                 getDivisionID(customer.getDivision())
         );
-        ResultSet rs = executeQuery(query);
+        ResultSet rs = executeQuery(getPreparedStatement(query));
         try {
             if (resultSetIsValid(rs) && rs.next()) {
                 return new Customer(
@@ -121,9 +126,9 @@ public class CustomerDAO extends DAO {
                         rs.getString(3),
                         rs.getString(4),
                         rs.getString(5),
-                        rs.getTimestamp(6).toLocalDateTime(),
+                        rs.getTimestamp(6),
                         rs.getString(7),
-                        rs.getTimestamp(8).toLocalDateTime(),
+                        rs.getTimestamp(8),
                         rs.getString(9),
                         rs.getString(10),
                         rs.getString(11)
@@ -141,8 +146,7 @@ public class CustomerDAO extends DAO {
         String query = "SELECT Division_ID \n" +
                 "FROM first_level_divisions\n" +
                 "WHERE Division = \"%s\";";
-        query = String.format(query, division);
-        ResultSet rs = executeQuery(query);
+        ResultSet rs = executeQuery(getPreparedStatement(String.format(query, division)));
         try {
             if (resultSetIsValid(rs) && rs.next()) {
                 return rs.getInt(1);
@@ -154,7 +158,7 @@ public class CustomerDAO extends DAO {
         return id;
     }
 
-    public boolean updateCustomer(Customer customer, String user) {
+    public boolean updateCustomer(Customer customer, User user) {
         int divisionId = getDivisionID(customer.getDivision());
         if (divisionId > 0) {
             String updateQuery = "UPDATE customers\n" +
@@ -164,7 +168,7 @@ public class CustomerDAO extends DAO {
                     "\tPostal_Code = \"%s\",\n" +
                     "\tPhone = \"%s\",\n" +
                     "\tLast_Updated_By = \"%s\",\n" +
-                    "\tLast_Update = \"%s\",\n" +
+                    "\tLast_Update = ?,\n" +
                     "\tDivision_ID = %d\n" +
                     "WHERE Customer_ID = %d;\n";
             updateQuery = String.format(
@@ -173,17 +177,23 @@ public class CustomerDAO extends DAO {
                     customer.getAddress(),
                     customer.getPostalCode(),
                     customer.getPhone(),
-                    user,
-                    Timestamp.valueOf(LocalDateTime.now()),
+                    user.getUsername(),
                     divisionId,
                     customer.getCustomerId()
             );
-            return executeUpdate(updateQuery);
+            PreparedStatement ps = getPreparedStatement(updateQuery);
+            try {
+                ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+            } catch (SQLException sqle) {
+                error(sqle);
+                return false;
+            }
+            return executeUpdate(ps);
         }
         return false;
     }
 
-    public boolean insertCustomer(Customer customer, String user) {
+    public boolean insertCustomer(Customer customer, User user) {
         int divisionId = getDivisionID(customer.getDivision());
         if (divisionId > 0) {
             String insertQuery = "INSERT INTO customers (\n" +
@@ -196,11 +206,11 @@ public class CustomerDAO extends DAO {
                     "\t\"%s\",\n" +
                     "\t\"%s\",\n" +
                     "\t\"%s\",\n" +
+                    "\t?,\n" +
                     "\t\"%s\",\n" +
+                    "\t?,\n" +
                     "\t\"%s\",\n" +
-                    "\t\"%s\",\n" +
-                    "\t\"%s\",\n" +
-                    "\t%d" +
+                    "\t%d\n" +
                     ");";
             insertQuery = String.format(
                     insertQuery,
@@ -208,13 +218,19 @@ public class CustomerDAO extends DAO {
                     customer.getAddress(),
                     customer.getPostalCode(),
                     customer.getPhone(),
-                    Timestamp.valueOf(LocalDateTime.now()),
-                    user,
-                    Timestamp.valueOf(LocalDateTime.now()),
-                    user,
+                    user.getUsername(),
+                    user.getUsername(),
                     divisionId
             );
-            return executeUpdate(insertQuery);
+            PreparedStatement ps = getPreparedStatement(insertQuery);
+            try {
+                ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+                ps.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+            } catch (SQLException sqle) {
+                error(sqle);
+                return false;
+            }
+            return executeUpdate(ps);
         }
         return false;
     }
@@ -222,11 +238,9 @@ public class CustomerDAO extends DAO {
     public boolean deleteCustomer(int customerId) {
         String deleteQuery = String.format(
                 "DELETE FROM customers\n" +
-                        "WHERE Customer_ID = %d;" +
-                        "DELETE FROM appointments\n" +
-                        "WHERE Customer_ID = %d",
+                        "WHERE Customer_ID = %d;\n",
                 customerId
         );
-        return executeUpdate(deleteQuery);
+        return executeUpdate(getPreparedStatement(deleteQuery));
     }
 }

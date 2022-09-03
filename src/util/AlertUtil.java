@@ -17,10 +17,7 @@ public class AlertUtil {
         alert.setHeaderText(message);
         alert.setContentText(options);
         alert.showAndWait();
-        if(alert.getResult() == ButtonType.OK) {
-            return true;
-        }
-        return false;
+        return alert.getResult() == ButtonType.OK;
     }
 
     public void error(String title, String message) {

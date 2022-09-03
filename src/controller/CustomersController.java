@@ -1,5 +1,6 @@
 package controller;
 
+import constants.ScenePathConstants;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -42,7 +43,9 @@ public class CustomersController extends Controller {
     @FXML
     private TableView<Customer> customerTable;
 
-    @FXML
+    /**
+     * The view's initialization function that uses lambda functions to set the table view cell value factories
+     */
     public void initialize(URL url, ResourceBundle rb) {
         nameTVCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         phoneTVCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPhone()));
@@ -51,22 +54,43 @@ public class CustomersController extends Controller {
         updateCustomers();
     }
 
+    /**
+     * Updates the customer table view
+     */
     public void updateCustomers() {
         customerTable.setItems(CUSTOMER_DAO.getCustomers());
     }
 
+    /**
+     * Back button handler - redirects the user to the home page
+     *
+     * @param event - Triggering event
+     * @throws IOException - Exception thrown when there is an IO error
+     */
     public void backButtonPressed(ActionEvent event) throws IOException {
-        SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.HOME, USER);
+        SCENE_MANAGER.changeScene(event, ScenePathConstants.HOME, USER);
     }
 
+    /**
+     * Create button handler - redirects the user to the customer page passing in an empty customer
+     *
+     * @param event - Triggering event
+     * @throws IOException - Exception thrown when there is an IO error
+     */
     public void createButtonPressed(ActionEvent event) throws IOException {
-        SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.CUSTOMER, USER, new Customer());
+        SCENE_MANAGER.changeScene(event, ScenePathConstants.CUSTOMER, USER, new Customer());
     }
 
+    /**
+     * Create button handler - redirects the user to the customer page passing in the selected customer
+     *
+     * @param event - Triggering event
+     * @throws IOException - Exception thrown when there is an IO error
+     */
     public void viewButtonPressed(ActionEvent event) throws IOException {
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
         if (selectedCustomer != null) {
-            SCENE_MANAGER.changeScene(event, SCENE_PATH_CONSTANTS.CUSTOMER, USER, selectedCustomer);
+            SCENE_MANAGER.changeScene(event, ScenePathConstants.CUSTOMER, USER, selectedCustomer);
         } else {
             ALERTING.alert(
                     "No Customer Selected",
@@ -75,7 +99,10 @@ public class CustomersController extends Controller {
         }
     }
 
-    public void deleteButtonPressed(ActionEvent event) {
+    /**
+     * Delete button handler - asks the user for verification and deletes the selected customer
+     */
+    public void deleteButtonPressed() {
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
         if (selectedCustomer != null) {
             boolean confirmed = ALERTING.confirm(
@@ -85,10 +112,13 @@ public class CustomersController extends Controller {
                     "Press OK to delete the customer\nPress Cancel to cancel deletion."
             );
             if (confirmed) {
-                // TODO: Delete customer appointments -> Delete customer by ID
                 int selectedCustomerId = selectedCustomer.getCustomerId();
-                boolean success = CUSTOMER_DAO.deleteCustomer(selectedCustomerId);
+                boolean success = (
+                        CUSTOMER_DAO.deleteCustomer(selectedCustomerId) &&
+                                APPOINTMENT_DAO.deleteCustomerAppointments(selectedCustomerId)
+                );
                 if (success) {
+                    updateCustomers();
                     ALERTING.inform(
                             "Successful Delete",
                             "The selected customer and their appoinments were successfully deleted."
