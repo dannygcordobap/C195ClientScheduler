@@ -22,7 +22,7 @@ public class SceneManagerUtil {
      *
      * @param event - ActionEvent that caused the scene change
      * @param newSceneRelativePath - {@link constants.ScenePathConstants} constant for the new scene
-     * @param user - {@link User currently logged in
+     * @param user - {@link User} currently logged in
      * @throws IOException - Thrown on read write error
      */
     public void changeScene(ActionEvent event, String newSceneRelativePath, User user) throws IOException {
@@ -42,7 +42,7 @@ public class SceneManagerUtil {
      *
      * @param event - ActionEvent that caused the scene change
      * @param newSceneRelativePath - {@link constants.ScenePathConstants} constant for the new scene
-     * @param user - {@link User currently logged in
+     * @param user - {@link User} currently logged in
      * @param customer - {@link Customer} to pass to new view
      * @throws IOException - Thrown on read write error
      */
@@ -67,7 +67,7 @@ public class SceneManagerUtil {
      *
      * @param event - ActionEvent that caused the scene change
      * @param newSceneRelativePath - {@link constants.ScenePathConstants} constant for the new scene
-     * @param user - {@link User currently logged in
+     * @param user - {@link User} currently logged in
      * @param appointment - {@link Appointment} to pass to new view
      * @throws IOException - Thrown on read write error
      */

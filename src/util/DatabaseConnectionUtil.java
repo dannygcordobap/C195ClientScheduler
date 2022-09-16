@@ -34,7 +34,6 @@ public class DatabaseConnectionUtil {
     /**
      * Method to connect to database with the credentials provided during initialization
      *
-     * @return DatabaseConnection object
      * @throws Exception upon invalid connection
      */
     public void connect() throws Exception {
@@ -52,26 +51,24 @@ public class DatabaseConnectionUtil {
     /**
      * Method to execute select-from-where SQL queries
      *
-     * @param query the SQL query to execute as a string
+     * @param ps the SQL query to execute as a string
      * @return ResultSet containing the results of the query
      * @throws SQLException if the sql statement passed in is invalid
      * @throws Exception    if the database connection variable is null
      */
     public ResultSet executeQuery(PreparedStatement ps) throws SQLException, Exception {
-        ResultSet rs = ps.executeQuery();
-        return rs;
+        return ps.executeQuery();
     }
 
     /**
      * Method to excute queries other than select-from-where queries
      *
-     * @param query the SQL query to execute
+     * @param ps the SQL query to execute
      * @return int representing the number of affected rows
      * @throws SQLException if the SQL statement passed in is invalid
      * @throws Exception    if the database connection variable is null
      */
     public int executeUpdate(PreparedStatement ps) throws SQLException, Exception {
-        int updatedRows = ps.executeUpdate();
-        return updatedRows;
+        return ps.executeUpdate();
     }
 }
