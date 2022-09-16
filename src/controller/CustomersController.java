@@ -114,14 +114,14 @@ public class CustomersController extends Controller {
             if (confirmed) {
                 int selectedCustomerId = selectedCustomer.getCustomerId();
                 boolean success = (
-                        CUSTOMER_DAO.deleteCustomer(selectedCustomerId) &&
-                                APPOINTMENT_DAO.deleteCustomerAppointments(selectedCustomerId)
+                        APPOINTMENT_DAO.deleteCustomerAppointments(selectedCustomerId) &&
+                                CUSTOMER_DAO.deleteCustomer(selectedCustomerId)
                 );
                 if (success) {
                     updateCustomers();
                     ALERTING.inform(
                             "Successful Delete",
-                            "The selected customer and their appoinments were successfully deleted."
+                            "The selected customer and their appointments were successfully deleted."
                     );
                 } else {
                     ALERTING.alert(
