@@ -6,9 +6,11 @@
 ## Purpose of application
 This application provides a client scheduling platform for use across timezones
 
-## Author Information
-application version: 1.0  
-date: 09/15/2022
+## Information
+Author: Daniel Cordoba Paez
+Contact: dcordob@wgu.edu
+Application Version: 1.0  
+Date: 09/15/2022
 
 ## IDE and Java Information
 1. IntelliJ IDEA 2021.1.3 (Community Edition)

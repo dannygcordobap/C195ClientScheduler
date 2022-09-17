@@ -176,9 +176,14 @@ public class ScheduleController extends Controller {
             if (confirmed) {
                 if (APPOINTMENT_DAO.deleteAppointment(selectedAppointment.getAppointmentId())) {
                     updateAppointments();
+                    String message = String.format(
+                            "The selected appointment was successfully deleted.\n\n" +
+                                    "APPOINTMENT DELETED:\nAppointment ID: %d,\tType: %s",
+                            selectedAppointment.getAppointmentId(),
+                            selectedAppointment.getType());
                     ALERTING.inform(
                             "Successful Delete",
-                            "The selected appointment was successfully deleted."
+                            message
                     );
                 } else {
                     ALERTING.alert(
